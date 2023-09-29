@@ -1,0 +1,128 @@
+Sub ticker_symbol()
+For Each ws In ThisWorkbook.Worksheets 'This code for applying the code to all worksheets is from https://stackoverflow.com/questions/43738802/how-to-apply-vba-code-to-all-worksheets-in-the-workbook
+ws.Activate
+    Dim Ticker As String
+    Dim Counter As Integer
+    Dim Counter2 As Integer
+    Dim Counter3 As Integer
+
+    Dim BeginningPrice As Double
+    Dim EndPrice As Double
+    Dim PerChange As Double
+    Dim Volume As LongLong
+    
+    Dim GreatestInc As Double
+    Dim GreatestIncTicker As String
+    
+    Dim GreatestDec As Double
+    Dim GreatestDecTicker As String
+    
+    Dim GreatestVol As LongLong
+    Dim GreatestVolTicker As String
+    
+    
+    Counter = 2
+    Counter2 = 2
+    Range("O2").Value = "Greatest % Increase"
+    Range("O3").Value = "Greatest % Decrease"
+    Range("O4").Value = "Greatest Total Volume"
+    Range("P1").Value = "Ticker"
+    Range("Q1").Value = "Value"
+    Range("I1").Value = "Ticker"
+    Range("J1").Value = "Yearly Change"
+    Range("K1").Value = "Percent Change"
+    Range("L1").Value = "Total Stock Volume"
+    LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+    For i = 2 To LastRow
+        If Cells(i, 1).Value <> Cells(i - 1, 1).Value Then
+            BeginningPrice = Cells(i, 3).Value
+        End If
+       
+        If Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
+        
+            Ticker = Cells(i, 1).Value
+            EndPrice = Cells(i, 6).Value
+            
+            Cells(Counter, 9).Value = Ticker
+            Cells(Counter, 10).Value = EndPrice - BeginningPrice
+            PerChange = ((EndPrice - BeginningPrice) / BeginningPrice)
+            Cells(Counter, 11).Value = FormatPercent(PerChange, 2)
+            Counter = Counter + 1
+            
+        
+        End If
+        
+    Next i
+    
+    For i = 2 To LastRow
+        
+         
+        If Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
+        Volume = Volume + Cells(i, 7).Value
+        Cells(Counter2, 12).Value = Volume
+        Counter2 = Counter2 + 1
+        Volume = 0
+    
+        
+        
+        Else
+        Volume = Volume + Cells(i, 7).Value
+        End If
+    Next i
+        
+    For i = 2 To LastRow
+    
+        If Cells(i, 10) >= 0 Then
+            Cells(i, 10).Interior.Color = RGB(0, 255, 0)
+        Else
+            Cells(i, 10).Interior.Color = RGB(255, 0, 0)
+        End If
+    Next i
+        
+    GreatestInc = 0
+    For i = 2 To LastRow
+    
+    If Cells(i, 11).Value > GreatestInc Then
+        GreatestInc = Cells(i, 11).Value
+        GreatestIncTicker = Cells(i, 9).Value
+        
+    
+    End If
+    Next i
+    Cells(2, 17).Value = FormatPercent(GreatestInc, 2)
+    Cells(2, 16).Value = GreatestIncTicker
+    
+    
+    GreatestDec = 0
+    For i = 2 To LastRow
+    
+    If Cells(i, 11).Value < GreatestDec Then
+        GreatestDec = Cells(i, 11).Value
+        GreatestDecTicker = Cells(i, 9).Value
+        
+    
+    End If
+    Next i
+    Cells(3, 17).Value = FormatPercent(GreatestDec, 2)
+    Cells(3, 16).Value = GreatestDecTicker
+    
+    GreatestVol = 0
+    For i = 2 To LastRow
+    
+    If Cells(i, 12).Value > GreatestVol Then
+        GreatestVol = Cells(i, 12).Value
+        GreatestVolTicker = Cells(i, 9).Value
+        
+    
+    End If
+    Next i
+    Cells(4, 17).Value = GreatestVol
+    Cells(4, 16).Value = GreatestVolTicker
+    
+Next ws
+    
+    
+End Sub
+
+
+
